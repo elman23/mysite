@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, login_user, LoginManager, logout_user, UserMixin, current_user
+from flask_login import login_required, login_user, LoginManager, logout_user, UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -28,12 +28,13 @@ class User(UserMixin):
         self.username = username
         self.password_hash = password_hash
 
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+
     def get_id(self):
         return self.username
-
 
 all_users = {
     "admin": User("admin", generate_password_hash("secret")),
@@ -60,13 +61,11 @@ def index():
     if request.method == "GET":
         return render_template("main_page.html", comments=Comment.query.all())
 
-    if not current_user.is_authenticated:
-        return redirect(url_for('index'))
-
     comment = Comment(content=request.form["contents"])
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('index'))
+
 
 
 @app.route("/login/", methods=["GET", "POST"])
