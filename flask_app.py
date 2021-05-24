@@ -1,9 +1,9 @@
 from datetime import datetime
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 app = Flask(__name__)
@@ -72,7 +72,6 @@ def index():
     return redirect(url_for('index'))
 
 
-
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -89,9 +88,33 @@ def login():
     return redirect(url_for('index'))
 
 
-
 @app.route("/logout/")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/register/', methods=('GET', 'POST'))
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
+
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+        elif User.query.filter_by(username=username).first() is not None:
+            error = f"User {username} is already registered."
+
+        if error is None:
+            user = User(username=username, password_hash=generate_password_hash(password))
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('login'))
+
+        flash(error)
+
+    return render_template('register_page.html')
