@@ -106,13 +106,15 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif User.query.filter_by(username=user_id).first() is not None:
+        elif User.query.filter_by(username=username).first() is not None:
             error = f"User {username} is already registered."
 
         if error is None:
             user = User(username=username, password_hash=generate_password_hash(password))
+            db.session.add(user)
+            db.session.commit()
             return redirect(url_for('login'))
 
         flash(error)
 
-    return render_template('auth/register.html')
+    return render_template('register_page.html')
