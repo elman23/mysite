@@ -79,10 +79,10 @@ def login():
 
     user = load_user(request.form["username"])
     if user is None:
-        return render_template("login_page.html", error=True)
+        return render_template("login_page.html", error="Incorrect username.")
 
     if not user.check_password(request.form["password"]):
-        return render_template("login_page.html", error=True)
+        return render_template("login_page.html", error="Incorrect password.")
 
     login_user(user)
     return redirect(url_for('index'))
@@ -114,7 +114,7 @@ def register():
             db.session.add(user)
             db.session.commit()
             return redirect(url_for('login'))
-
-        flash(error)
+        else:
+            return render_template("register_page.html", error=error)
 
     return render_template('register_page.html')
