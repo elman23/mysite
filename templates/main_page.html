@@ -44,9 +44,10 @@
             {% for comment in comments %}
                 <div class="row">
                     <div>
-                        {{ comment.content }}
+                        <p>{{ comment.content }}</p>
                     </div>
                     <div>
+                        <p>
                         <small>
                             Posted
                             {% if comment.posted %}
@@ -61,6 +62,7 @@
                                 anonymous
                             {% endif %}
                         </small>
+                        </p>
                     </div>
                 </div>
             {% endfor %}
